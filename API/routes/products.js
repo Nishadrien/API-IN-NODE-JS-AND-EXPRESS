@@ -39,7 +39,7 @@ router.get('/:productId',(req,res,next)=>{
     if(result){
         console.log('One Element Fetched');
         res.status(200).json({
-            ProductId:result 
+            ProductDetails:result 
          })
     }
     else{
@@ -55,7 +55,25 @@ router.get('/:productId',(req,res,next)=>{
    })
     });
     router.patch('/:productId',(req,res,next)=>{
-   
+        const id=req.params.productId;
+        // const updateOps={};  can be used when there is only one update
+        // for(const ops of req.body){
+        //     updateOps[ops.propName]=ops.value;        }
+        Product.updateOne({_id:id},{$set:{name:req.body.name,price:req.body.price}}).exec()
+        .then(result=>{
+            console.log(result);
+            res.status(200).json(
+                result
+            )
+
+        })
+        .catch(err=>{
+            console.log(err);
+            res.status(500).json({
+                error:err
+            })
+
+        });
        
     });
     router.delete('/:productId',(req,res,next)=>{
