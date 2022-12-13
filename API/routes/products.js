@@ -3,9 +3,25 @@ const router=express.Router();
 const mongoose=require('mongoose');
 const Product=require('../models/products');
 router.get('/',(req,res,next)=>{
-Product.find().then((result)=>{
+Product.find()
+.select('name price _id')
+.then((result)=>{
+    const response={
+        count:result.length,
+        products:result.map(result=>{
+            return {
+                _id:result._id,
+                name:result.name,
+                price:result.price,
+                request:{
+                    type:'GET',
+                    url:'http://localhost:3000/products/'+result._id
+                }
+            }
+        })
+    }
    
-        res.status(200).json(result);  
+        res.status(200).json(response);  
 })
 });
 router.post('/',(req,res,next)=>{
@@ -18,8 +34,16 @@ price:req.body.price
     product.save().then((result)=>{
         console.log('inserted successfully');
         res.status(201).json({
-            message:'it is post method of products ',
-            createdProduct:product
+            message:'product created successfully ',
+            createdProduct:{
+                _id:result._id,
+                name:result.name,
+                price:result.price,
+                request:{
+                    type:'GET',
+                    url:'http://localhost:3000/products/'+result._id
+                }
+            }
             
         });
     })
@@ -39,7 +63,15 @@ router.get('/:productId',(req,res,next)=>{
     if(result){
         console.log('One Element Fetched');
         res.status(200).json({
-            ProductDetails:result 
+            ProductDetails:{
+                _id:result._id,
+                name:result.name,
+                price:result.price,
+                request:{
+                    type:'GET_ALL_PRODUCTS',
+                    url:'http://localhost:3000/products/'
+                }
+            }
          })
     }
     else{
@@ -63,7 +95,14 @@ router.get('/:productId',(req,res,next)=>{
         .then(result=>{
             console.log(result);
             res.status(200).json(
-                result
+                {
+                    message:'product updated successfully',
+                    request:{
+                        type:'GET',
+                        url:'http://localhost:3000/products/'+id
+                    }
+
+                }
             )
 
         })
