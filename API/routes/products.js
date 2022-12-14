@@ -6,23 +6,9 @@ router.get('/',(req,res,next)=>{
 Product.find()
 .select('name price _id')
 .then((result)=>{
-    const response={
-        count:result.length,
-        products:result.map(result=>{
-            return {
-                _id:result._id,
-                name:result.name,
-                price:result.price,
-                request:{
-                    type:'GET',
-                    url:'http://localhost:3000/products/'+result._id
-                }
-            }
-        })
-    }
-   
-        res.status(200).json(response);  
-})
+   res.status(200).json(result)
+    })
+
 });
 router.post('/',(req,res,next)=>{
    
